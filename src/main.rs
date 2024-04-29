@@ -112,7 +112,7 @@ fn main() {
         .arg(
             Arg::new("gen-input-cmd")
                 .long("gen-input-cmd")
-                .default_value("gen.py")
+                .default_value("./gen.py")
                 .help("Command or executable file that creates `in.txt`."),
         )
         .arg(
