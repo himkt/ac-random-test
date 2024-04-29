@@ -80,11 +80,20 @@ fn verify(args: &clap::ArgMatches) -> Result<()> {
     }
 
     if !without_lazy {
-        let run_lazy_cmd: Vec<String> = run_cmd_template
-            .replace("{argv0}", &format!("{}_lazy", name))
-            .split_whitespace()
-            .map(String::from)
-            .collect();
+        let run_lazy_cmd: Vec<String> = if let Some(run_lazy_cmd_template) = args.get_one::<String>("run-lazy-cmd") {
+            run_lazy_cmd_template
+                .replace("{argv0}", &name.to_string())
+                .split_whitespace()
+                .map(String::from)
+                .collect()
+        }
+        else {
+            run_cmd_template
+                .replace("{argv0}", &format!("{}_lazy", name))
+                .split_whitespace()
+                .map(String::from)
+                .collect()
+        };
         let (lazy_output, _) = run(&run_lazy_cmd, "in.txt")?;
 
         if lazy_output != output {
@@ -120,6 +129,12 @@ fn main() {
                 .long("run-cmd")
                 .default_value("cargo run --release --bin {argv0}")
                 .help("Command to run a program."),
+        )
+        .arg(
+            Arg::new("run-lazy-cmd")
+                .long("run-lazy-cmd")
+                .default_value(None)
+                .help("Command to run a lazy program.")
         )
         .arg(
             Arg::new("without-lazy")
