@@ -1,7 +1,7 @@
-use clap::{Arg, Command as ClapCommand};
+use clap::{Arg,Command as ClapCommand};
 use std::{
     fs::File,
-    io::{self, ErrorKind},
+    io::{Error,ErrorKind,Result},
     process::{Command, Stdio},
     time::Instant,
 };
@@ -12,7 +12,7 @@ const WARN: &str = "\x1b[1;33m";
 const FAIL: &str = "\x1b[91m";
 const ENDC: &str = "\x1b[0m";
 
-fn run(command: &[String], input_path: &str) -> io::Result<(String, f64)> {
+fn run(command: &[String], input_path: &str) -> Result<(String, f64)> {
     let start = Instant::now();
     let file = File::open(input_path)?;
     let output = Command::new(&command[0])
@@ -22,7 +22,7 @@ fn run(command: &[String], input_path: &str) -> io::Result<(String, f64)> {
         .output()?;
 
     if !output.status.success() {
-        return Err(io::Error::new(
+        return Err(Error::new(
             ErrorKind::Other,
             format!(
                 "Run: {}failed{} command '{}' failed with exit status: {}",
@@ -36,7 +36,7 @@ fn run(command: &[String], input_path: &str) -> io::Result<(String, f64)> {
 
     let duration = start.elapsed().as_secs_f64() * 1000.0;
     let output_str =
-        String::from_utf8(output.stdout).map_err(|e| io::Error::new(ErrorKind::InvalidData, e))?;
+        String::from_utf8(output.stdout).map_err(|e| Error::new(ErrorKind::InvalidData, e))?;
     Ok((output_str.trim().to_string(), duration))
 }
 
@@ -51,7 +51,7 @@ fn elapsed_with_color(elapsed: f64) -> String {
     format!("{}{:.2} ms{}", color, elapsed, ENDC)
 }
 
-fn verify(args: &clap::ArgMatches) -> io::Result<()> {
+fn verify(args: &clap::ArgMatches) -> Result<()> {
     let name = args.get_one::<String>("name").unwrap();
     let gen_input_cmd = args.get_one::<String>("gen-input-cmd").unwrap();
     let run_cmd_template = args.get_one::<String>("run-cmd").unwrap();
