@@ -9,13 +9,18 @@ CLI to run a program with randomly generated inputs (a.k.a. stress test), design
 `ac-random-test` assumes `gen.py` (executable) exists on the current directory.
 `gen.py` should be executable like following:
 
+##### `file gen.py`
+
 ```bash
-> file gen.py
 gen.py: Python script text executable, ASCII text
 ```
 
+> [!IMPORTANT]
+> Make sure `gen.py` is executable.
+
+##### `cat gen.py`
+
 ```python
-> cat gen.py
 #!/usr/bin/python3
 import random
 n = random.randint(1, 5)
@@ -24,6 +29,9 @@ with open("in.txt", "w") as f:
     print(n, file=f)
     print(" ".join(a), file=f)
 ```
+
+> [!IMPORTANT]
+> Don't forget to provide a shebang.
 
 #### 2. Running a program
 
