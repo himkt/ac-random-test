@@ -39,14 +39,17 @@ const WARN: &str = "\x1b[1;33m";
 const FAIL: &str = "\x1b[91m";
 const ENDC: &str = "\x1b[0m";
 
-fn run(command: &[String], input_path: &str) -> Result<(String, f64)> {
+fn run(command: &[String], input_path: Option<&str>) -> Result<(String, f64)> {
     let start = Instant::now();
-    let file = File::open(input_path)?;
-    let output = Command::new(&command[0])
+    let mut binding = Command::new(&command[0]);
+    let mut sys_command = binding
         .args(&command[1..])
-        .stdin(Stdio::from(file))
-        .stderr(Stdio::null())
-        .output()?;
+        .stderr(Stdio::null());
+    if let Some(input_path) = input_path {
+        let file = File::open(input_path)?;
+        sys_command = sys_command.stdin(Stdio::from(file));
+    }
+    let output = sys_command.output()?;
 
     if !output.status.success() {
         return Err(Error::new(
@@ -92,8 +95,8 @@ fn verify(args: &Args) -> Result<()> {
         .map(String::from)
         .collect();
 
-    run(&gen_cmd, "in.txt")?;
-    let (output, elapsed) = run(&run_cmd, "in.txt")?;
+    run(&gen_cmd, None)?;
+    let (output, elapsed) = run(&run_cmd, Some("in.txt"))?;
 
     if elapsed >= max_ms {
         println!(
@@ -121,7 +124,7 @@ fn verify(args: &Args) -> Result<()> {
                 .map(String::from)
                 .collect()
         };
-        let (lazy_output, _) = run(&run_lazy_cmd, "in.txt")?;
+        let (lazy_output, _) = run(&run_lazy_cmd, Some("in.txt"))?;
 
         if lazy_output != output {
             println!("Run: {}failed{} (found the edge case and stored in in.txt. [output: expected={}, got={}])", FAIL, ENDC, OKGREEN.to_owned() + &lazy_output + ENDC, FAIL.to_owned() + &output + ENDC);
