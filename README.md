@@ -2,6 +2,17 @@
 
 CLI to run a program with randomly generated inputs (a.k.a. stress test), designed for programming contest (like AtCoder).
 
+### Install
+
+Use homebrew.
+
+```
+brew tap himkt/himkt                                                                                                                                   [2024-04-29 17:54:56]
+brew install himkt/himkt/ac-random-test
+```
+
+You can also download a binary from [GitHub Release](https://github.com/himkt/ac-random-test/releases).
+
 ### Basic usage
 
 #### 1. Generating input randomly
