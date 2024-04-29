@@ -9,7 +9,7 @@ CLI to run a program with randomly generated inputs (a.k.a. stress test), design
 `ac-random-test` assumes `gen.py` (executable) exists on the current directory.
 `gen.py` should be executable like following:
 
-```sh
+```bash
 > file gen.py
 gen.py: Python script text executable, ASCII text
 ```
@@ -33,19 +33,19 @@ with open("in.txt", "w") as f:
 you need to prepare two programs: one is a submission program and the another is a
 slow-but-correct program.
 
-```sh
+```bash
 ac-random-test a.out --run-cmd './{argv0}'
 ```
 
 If you want to run `ac-random-test` without a lazy program, specify `--without-lazy`.
 
-```sh
+```bash
 ac-random-test a.out --run-cmd './{argv0}' --without-lazy
 ```
 
 You may want to run a program written in other languages. No worries, please specify `--run-lazy-cmd`!
 
-```sh
+```bash
 ac-random-test a.out --run-cmd './{argv0}' --run-lazy-cmd 'python3 slow_ac_code.py'
 ```
 
@@ -55,12 +55,21 @@ In programing contest, your program must finish to run in a given time limit.
 To find an input that makes your program slow, you can specify `--max-ms` to limit an execution time.
 For example, if you provide `--max-ms 50`, `ac-random-test` fails if your program don't finished within 50ms.
 
-```sh
+```bash
 ac-random-test a.out --run-cmd './{argv0}' --max-ms 50
 ```
 
 Of course, `--max-ms` works with `--without-lazy`!
 
-```sh
+```bash
 ac-random-test a.out --run-cmd './{argv0}' --max-ms 50 --without-lazy
+```
+
+### 4. Using custom input generating scripts
+
+`ac-random-test` assumes `gen.py` is created in the current directory by default.
+You can use a custom script by specifying `--gen-input-cmd`.
+
+```bash
+ac-random-test a.out --run-cmd './{argv0}' --gen-input-cmd "python3 $HOME/Desktop/gen.py"
 ```
