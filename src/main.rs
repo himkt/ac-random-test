@@ -1,10 +1,37 @@
-use clap::{Arg,Command as ClapCommand};
+use clap::{Parser, ArgAction};
 use std::{
     fs::File,
     io::{Error,ErrorKind,Result},
     process::{Command, Stdio},
     time::Instant,
 };
+
+#[derive(Parser)]
+#[clap(author, version, about, long_about = None)]
+struct Args {
+    /// Name to be passed to `--run-cmd`
+    name: String,
+
+    /// Command or executable file that creates `in.txt`
+    #[clap(long, default_value = "./gen.py")]
+    gen_input_cmd: String,
+
+    /// Command to run a program
+    #[clap(long, default_value = "cargo run --release --bin {argv0}")]
+    run_cmd: String,
+
+    /// Command to run a lazy program
+    #[clap(long)]
+    run_lazy_cmd: Option<String>,
+
+    /// If this option is specified, skip the lazy version
+    #[clap(long, action = ArgAction::SetTrue)]
+    without_lazy: bool,
+
+    /// Maximum allowed milliseconds for a run
+    #[clap(long, default_value_t = f64::INFINITY, value_parser = clap::value_parser!(f64))]
+    max_ms: f64,
+}
 
 const OKBLUE: &str = "\x1b[94m";
 const OKGREEN: &str = "\x1b[92m";
@@ -51,12 +78,12 @@ fn elapsed_with_color(elapsed: f64) -> String {
     format!("{}{:.2} ms{}", color, elapsed, ENDC)
 }
 
-fn verify(args: &clap::ArgMatches) -> Result<()> {
-    let name = args.get_one::<String>("name").unwrap();
-    let gen_input_cmd = args.get_one::<String>("gen-input-cmd").unwrap();
-    let run_cmd_template = args.get_one::<String>("run-cmd").unwrap();
-    let max_ms = *args.get_one::<f64>("max-ms").unwrap();
-    let without_lazy = args.get_flag("without-lazy");
+fn verify(args: &Args) -> Result<()> {
+    let name = &args.name;
+    let gen_input_cmd = &args.gen_input_cmd;
+    let run_cmd_template = &args.run_cmd;
+    let max_ms = args.max_ms;
+    let without_lazy = args.without_lazy;
 
     let gen_cmd: Vec<String> = gen_input_cmd.split_whitespace().map(String::from).collect();
     let run_cmd: Vec<String> = run_cmd_template
@@ -80,7 +107,7 @@ fn verify(args: &clap::ArgMatches) -> Result<()> {
     }
 
     if !without_lazy {
-        let run_lazy_cmd: Vec<String> = if let Some(run_lazy_cmd_template) = args.get_one::<String>("run-lazy-cmd") {
+        let run_lazy_cmd: Vec<String> = if let Some(run_lazy_cmd_template) = &args.run_lazy_cmd {
             run_lazy_cmd_template
                 .replace("{argv0}", &name.to_string())
                 .split_whitespace()
@@ -112,48 +139,10 @@ fn verify(args: &clap::ArgMatches) -> Result<()> {
 }
 
 fn main() {
-    let app = ClapCommand::new("Test Runner")
-        .arg(
-            Arg::new("name")
-                .required(true)
-                .help("Name to be passed to `--run-cmd`."),
-        )
-        .arg(
-            Arg::new("gen-input-cmd")
-                .long("gen-input-cmd")
-                .default_value("./gen.py")
-                .help("Command or executable file that creates `in.txt`."),
-        )
-        .arg(
-            Arg::new("run-cmd")
-                .long("run-cmd")
-                .default_value("cargo run --release --bin {argv0}")
-                .help("Command to run a program."),
-        )
-        .arg(
-            Arg::new("run-lazy-cmd")
-                .long("run-lazy-cmd")
-                .default_value(None)
-                .help("Command to run a lazy program.")
-        )
-        .arg(
-            Arg::new("without-lazy")
-                .long("without-lazy")
-                .action(clap::ArgAction::SetTrue)
-                .help("If this option is specified, skip the lazy version."),
-        )
-        .arg(
-            Arg::new("max-ms")
-                .long("max-ms")
-                .default_value("inf")
-                .value_parser(clap::value_parser!(f64))
-                .help("Maximum allowed milliseconds for a run."),
-        );
-
-    let matches = app.get_matches();
+    let args = Args::parse();
 
     loop {
-        if let Err(e) = verify(&matches) {
+        if let Err(e) = verify(&args) {
             eprintln!("Error: {}", e);
             break;
         }
