@@ -48,13 +48,17 @@ ac-random-test a.out --run-cmd './{argv0}'
 If you want to run `ac-random-test` without a lazy program, specify `--without-lazy`.
 
 ```bash
-ac-random-test a.out --run-cmd './{argv0}' --without-lazy
+ac-random-test a.out \
+    --run-cmd './{argv0}' \
+    --without-lazy
 ```
 
 You may want to run a program written in other languages. No worries, please specify `--run-lazy-cmd`!
 
 ```bash
-ac-random-test a.out --run-cmd './{argv0}' --run-lazy-cmd 'python3 slow_ac_code.py'
+ac-random-test a.out \
+    --run-cmd './{argv0}' \
+    --run-lazy-cmd 'python3 slow_ac_code.py'
 ```
 
 ### 3. Setting time limit
@@ -64,13 +68,18 @@ To find an input that makes your program slow, you can specify `--max-ms` to lim
 For example, if you provide `--max-ms 50`, `ac-random-test` fails if your program don't finished within 50ms.
 
 ```bash
-ac-random-test a.out --run-cmd './{argv0}' --max-ms 50
+ac-random-test a.out \
+    --run-cmd './{argv0}' \
+    --max-ms 50
 ```
 
 Of course, `--max-ms` works with `--without-lazy`!
 
 ```bash
-ac-random-test a.out --run-cmd './{argv0}' --max-ms 50 --without-lazy
+ac-random-test a.out \
+    --run-cmd './{argv0}' \
+    --max-ms 50 \
+    --without-lazy
 ```
 
 ### 4. Using custom input generating scripts
@@ -79,5 +88,7 @@ ac-random-test a.out --run-cmd './{argv0}' --max-ms 50 --without-lazy
 You can use a custom script by specifying `--gen-input-cmd`.
 
 ```bash
-ac-random-test a.out --run-cmd './{argv0}' --gen-input-cmd "python3 $HOME/Desktop/gen.py"
+ac-random-test a.out \
+    --run-cmd './{argv0}' \
+    --gen-input-cmd "python3 $HOME/Desktop/gen.py"
 ```
