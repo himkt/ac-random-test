@@ -1,6 +1,6 @@
 ## AC Random Test
 
-CLI to run a program with randomly generated inputs (a.k.a. stress test), designed for competitive programming contest.
+CLI to run a program with randomly generated inputs (a.k.a. stress test), designed for programming contest (like AtCoder).
 
 ### Basic usage
 
