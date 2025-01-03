@@ -7,7 +7,7 @@ CLI to run a program with randomly generated inputs (a.k.a. stress test), design
 Use homebrew.
 
 ```
-brew tap himkt/himkt                                                                                                                                   [2024-04-29 17:54:56]
+brew tap himkt/tap
 brew install himkt/himkt/ac-random-test
 ```
 
