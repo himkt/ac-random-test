@@ -8,7 +8,7 @@ Use homebrew.
 
 ```
 brew tap himkt/tap
-brew install himkt/himkt/ac-random-test
+brew install himkt/tap/ac-random-test
 ```
 
 You can also download a binary from [GitHub Release](https://github.com/himkt/ac-random-test/releases).
